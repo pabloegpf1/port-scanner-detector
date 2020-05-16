@@ -1,8 +1,9 @@
 import dpkt
 import socket
+import datetime
 
-#SYNs vs ACKs ratio to be considered as a scan
-SYNACKRATIO = 3
+#Connections per second to be considered a scan
+CONNECTIONRATIO = 100
 
 class Source:
     def __init__(self, ip):
@@ -16,12 +17,18 @@ class Source:
     def addAck(self):
         self.ackCount += 1
 
-def tcpSynScan(filename):
+def tcpConnectScan(filename):
 
     pcap = dpkt.pcap.Reader(open(filename,'rb'))
     sources = {}
+    startTime = 0
+    endTime = 0
 
     for timestamp, packet in pcap:
+
+        if(startTime == 0): 
+            startTime = timestamp
+        endTime = timestamp
 
         eth = dpkt.ethernet.Ethernet(packet)
         ip = eth.data
@@ -43,16 +50,19 @@ def tcpSynScan(filename):
         elif(isACK(tcp)):
             sources.get(srcIP).addAck()
 
-    return extractSuspects(sources)
+    delta = calculateDelta(startTime, endTime)
 
-def extractSuspects(sources):
+    return extractSuspects(sources, delta)
+
+def extractSuspects(sources, delta):
     suspects = []
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
-        #Source is suspect if it has more SYNs than ACKs (depends on ratio)
-        if(currentSource.synCount >= SYNACKRATIO*currentSource.ackCount):
+        currentConnectionRatio = (currentSource.synCount + currentSource.ackCount)/delta
+        #Source is suspect if it has more SYNs + ACKs than ratio
+        if(currentConnectionRatio >= CONNECTIONRATIO):
             suspects.append(currentSource.ip)
-            #print("SUSPECT: ", currentSource.ip, "SYNs: ", currentSource.synCount, "ACKs: ", currentSource.ackCount)
+            #print("SUSPECT: ", currentSource.ip, "SYNs + ACKs per second: ", currentConnectionRatio)
 
     return suspects
 
@@ -61,3 +71,7 @@ def isACK(tcp):
 
 def isSYN(tcp):
     return tcp.flags & dpkt.tcp.TH_SYN  != 0
+
+def calculateDelta(startTime, endTime):
+    delta = datetime.datetime.fromtimestamp(endTime) - datetime.datetime.fromtimestamp(startTime)
+    return delta.total_seconds()

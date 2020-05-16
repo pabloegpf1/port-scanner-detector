@@ -1,6 +1,7 @@
 import sys
 import dpkt
 from strategies.tcpsyn import tcpSynScan
+from strategies.tcpconnect import tcpConnectScan
 
 def main(argv):
     if(len(sys.argv)) != 2:
@@ -8,9 +9,9 @@ def main(argv):
         sys.exit()
     filename = sys.argv[1]
 
-    pcap = dpkt.pcap.Reader(open(filename,'rb'))
 
-    print(tcpSynScan(pcap))
+    print("tcpSyn:",tcpSynScan(filename))
+    print("tcpConnect:",tcpConnectScan(filename))
 
 
 if __name__ == "__main__":
