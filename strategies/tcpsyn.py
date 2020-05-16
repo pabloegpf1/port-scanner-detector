@@ -50,13 +50,13 @@ def extractSuspects(sources):
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
         #Source is suspect if it has more SYNs than ACKs (depends on ratio)
-        if(currentSource.synCount >= SYNACKRATIO*currentSource.ackCount):
+        if(currentSource.synCount > SYNACKRATIO*currentSource.ackCount):
             suspects.append(currentSource.ip)
 
     return suspects
 
 def isACK(tcp):
-    return tcp.flags & dpkt.tcp.TH_ACK  != 0  
+    return tcp.flags & dpkt.tcp.TH_ACK  != 0 
 
 def isSYN(tcp):
-    return tcp.flags & dpkt.tcp.TH_SYN  != 0
+    return tcp.flags & dpkt.tcp.TH_SYN  != 0 & dpkt.tcp.TH_ACK  == 0

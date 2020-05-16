@@ -7,6 +7,7 @@ from strategies.tcpconnect import tcpConnectScan
 from strategies.tcpnull import tcpNullScan
 from strategies.tcpxmas import tcpXmasScan
 from strategies.tcpfin import tcpFinScan
+from strategies.udp import udpScan
 
 def main(argv):
     if(len(sys.argv)) != 2:
@@ -19,6 +20,7 @@ def main(argv):
     print("tcpNull:",tcpNullScan(filename))
     print("tcpxmas:",tcpXmasScan(filename))
     print("tcpfin:",tcpFinScan(filename))
+    print("udp:",udpScan(filename))
 
 if __name__ == "__main__":
    main(sys.argv[1:])

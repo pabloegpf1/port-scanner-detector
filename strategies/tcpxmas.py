@@ -39,4 +39,4 @@ def extractSuspects(sources):
     return suspects
 
 def isXmas(tcp):
-    return tcp.flags & dpkt.tcp.TH_FIN  != 0 & dpkt.tcp.TH_PUSH  != 0 & dpkt.tcp.TH_URG  != 0 
+    return tcp.flags & dpkt.tcp.TH_FIN > 0 & dpkt.tcp.TH_PUSH  > 0 & dpkt.tcp.TH_URG > 0 
