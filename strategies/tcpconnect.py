@@ -2,8 +2,10 @@ import dpkt
 import socket
 import datetime
 
-#Connections per second to be considered a scan
+#Connections per second to be considered a tcpConnect scan
 CONNECTIONRATIO = 100
+#SYNs vs ACKs ratio to be considered as a tcpSYN scan
+SYNACKRATIO = 3
 
 class Source:
     def __init__(self, ip):

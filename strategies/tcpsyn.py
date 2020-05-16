@@ -52,7 +52,6 @@ def extractSuspects(sources):
         #Source is suspect if it has more SYNs than ACKs (depends on ratio)
         if(currentSource.synCount >= SYNACKRATIO*currentSource.ackCount):
             suspects.append(currentSource.ip)
-            #print("SUSPECT: ", currentSource.ip, "SYNs: ", currentSource.synCount, "ACKs: ", currentSource.ackCount)
 
     return suspects
 
