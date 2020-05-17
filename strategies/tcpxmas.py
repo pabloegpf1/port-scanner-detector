@@ -1,6 +1,9 @@
 import dpkt
 import socket
 
+#FLAGS
+XMAS = 0x029
+
 class Source:
     def __init__(self, ip):
         self.ip = ip
@@ -25,7 +28,7 @@ def tcpXmasScan(filename):
         srcIP = socket.inet_ntoa(ip.src)
         
         #Select TCP packets with ACK, FIN and PUSH
-        if(isXmas(tcp)):
+        if(tcp.flags == XMAS):
             sources[srcIP] = Source(srcIP)
 
     return extractSuspects(sources)
@@ -37,6 +40,3 @@ def extractSuspects(sources):
         suspects.append(currentSource.ip)
 
     return suspects
-
-def isXmas(tcp):
-    return tcp.flags == 0x029 #TH_FIN + TH_URG + TH_PSH only

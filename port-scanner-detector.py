@@ -18,8 +18,8 @@ def main(argv):
     print("tcpSyn:",tcpSynScan(filename))
     print("tcpConnect:",tcpConnectScan(filename))
     print("tcpNull:",tcpNullScan(filename))
-    print("tcpxmas:",tcpXmasScan(filename))
-    print("tcpfin:",tcpFinScan(filename))
+    print("tcpXmas:",tcpXmasScan(filename))
+    print("tcpFin:",tcpFinScan(filename))
     print("udp:",udpScan(filename))
 
 if __name__ == "__main__":

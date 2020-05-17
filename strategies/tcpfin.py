@@ -1,6 +1,9 @@
 import dpkt
 import socket
 
+#Flags
+FIN = 0x001
+
 class Source:
     def __init__(self, ip):
         self.ip = ip
@@ -24,8 +27,8 @@ def tcpFinScan(filename):
 
         srcIP = socket.inet_ntoa(ip.src)
         
-        #Select TCP packets with only Fin flag
-        if(isFin(tcp)):
+        #Select TCP packets with only FIN flag
+        if(tcp.flags == FIN):
             sources[srcIP] = Source(srcIP)
 
     return extractSuspects(sources)
@@ -37,6 +40,3 @@ def extractSuspects(sources):
         suspects.append(currentSource.ip)
 
     return suspects
-
-def isFin(tcp):
-    return tcp.flags == 1 #FIN flag only

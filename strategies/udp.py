@@ -2,8 +2,8 @@ import dpkt
 import socket
 import datetime
 
-#Connections per second to be considered a tcpConnect scan
-CONNECTIONRATIO = 4
+#udp packets per second to be considered a udpScan
+PACKETRATIO = 4
 
 class Source:
     def __init__(self, ip):
@@ -53,7 +53,7 @@ def extractSuspects(sources, delta):
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
         connectionsPerSecond = len(currentSource.connections)/delta
-        if(connectionsPerSecond >= CONNECTIONRATIO):
+        if(connectionsPerSecond >= PACKETRATIO):
             suspects.append(currentSource.ip)
             #print("SUSPECT: ", currentSource.ip, "SYNs + ACKs per second: ", currentConnectionRatio)
 

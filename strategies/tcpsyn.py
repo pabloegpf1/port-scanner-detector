@@ -2,17 +2,27 @@ import dpkt
 import socket
 
 #SYNs vs ACKs ratio to be considered as a scan
-SYNACKRATIO = 3
+RSTRATIO = 100
+MINSYN = 100
+
+#Flags
+ACK = 0x010
+SYN = 0x002
+RST = 0x004
 
 class Source:
     def __init__(self, ip):
         self.ip = ip
         self.synCount = 0
+        self.rstCount = 0
         self.ackCount = 0
-    
+
     def addSyn(self):
         self.synCount += 1
-    
+
+    def addRst(self):
+        self.rstCount += 1
+
     def addAck(self):
         self.ackCount += 1
 
@@ -33,14 +43,16 @@ def tcpSynScan(filename):
 
         srcIP = socket.inet_ntoa(ip.src)
 
-        #Register new sources
+        #Register new source
         if(sources.get(srcIP) == None):
             sources[srcIP] = Source(srcIP)
 
         #Count SYNs and ACKs per source
-        if(isSYN(tcp)):
+        if(tcp.flags == SYN):
             sources.get(srcIP).addSyn()
-        elif(isACK(tcp)):
+        elif(tcp.flags == RST):
+            sources.get(srcIP).addRst()
+        elif(tcp.flags == ACK):
             sources.get(srcIP).addAck()
 
     return extractSuspects(sources)
@@ -50,13 +62,8 @@ def extractSuspects(sources):
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
         #Source is suspect if it has more SYNs than ACKs (depends on ratio)
-        if(currentSource.synCount > SYNACKRATIO*currentSource.ackCount):
+        if( (currentSource.synCount > MINSYN) & (currentSource.synCount > RSTRATIO*currentSource.rstCount)):
             suspects.append(currentSource.ip)
+            print("SUSPECT: ", currentSource.ip, "Sent SYNs", currentSource.synCount, "Sent RSTs", currentSource.rstCount, "Sent ACKs", currentSource.rstCount)
 
     return suspects
-
-def isACK(tcp):
-    return tcp.flags & dpkt.tcp.TH_ACK  != 0 
-
-def isSYN(tcp):
-    return tcp.flags & dpkt.tcp.TH_SYN  != 0 & dpkt.tcp.TH_ACK  == 0

@@ -25,7 +25,7 @@ def tcpNullScan(filename):
         srcIP = socket.inet_ntoa(ip.src)
 
         #Select TCP packets without flags
-        if(noFlags(tcp)):
+        if(tcp.flags == 0):
             sources[srcIP] = Source(srcIP)
 
     return extractSuspects(sources)
@@ -37,6 +37,3 @@ def extractSuspects(sources):
         suspects.append(currentSource.ip)
 
     return suspects
-
-def noFlags(tcp):
-    return tcp.flags == 0 #No flags

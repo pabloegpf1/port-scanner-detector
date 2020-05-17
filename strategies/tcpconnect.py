@@ -2,8 +2,13 @@ import dpkt
 import socket
 import datetime
 
+#Flags
+ACK = 0x010
+SYN = 0x002
+
 #Connections per second to be considered a tcpConnect scan
-CONNECTIONRATIO = 100
+ACKRATIO = 100
+MINSYN = 100
 
 class Source:
     def __init__(self, ip):
@@ -45,9 +50,9 @@ def tcpConnectScan(filename):
             sources[srcIP] = Source(srcIP)
 
         #Count SYNs and ACKs per source
-        if(isSYN(tcp)):
+        if(tcp.flags == SYN):
             sources.get(srcIP).addSyn()
-        elif(isACK(tcp)):
+        elif(tcp.flags == ACK):
             sources.get(srcIP).addAck()
 
     delta = calculateDelta(startTime, endTime)
@@ -58,19 +63,12 @@ def extractSuspects(sources, delta):
     suspects = []
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
-        currentConnectionRatio = (currentSource.synCount + currentSource.ackCount)/delta
-        #Source is suspect if it has more SYNs + ACKs than ratio
-        if(currentConnectionRatio >= CONNECTIONRATIO):
+        #Source is suspect if it has more SYNs than ACKs (using ratio)
+        if( (currentSource.synCount > MINSYN) & (currentSource.synCount > ACKRATIO*currentSource.ackCount)):
             suspects.append(currentSource.ip)
-            #print("SUSPECT: ", currentSource.ip, "SYNs + ACKs per second: ", currentConnectionRatio)
+            #print("SUSPECT: ", currentSource.ip, "SYNs", currentSource.synCount, "ACKs", currentSource.ackCount)
 
     return suspects
-
-def isACK(tcp):
-    return tcp.flags & dpkt.tcp.TH_ACK  != 0  
-
-def isSYN(tcp):
-    return tcp.flags & dpkt.tcp.TH_SYN  != 0
 
 def calculateDelta(startTime, endTime):
     delta = datetime.datetime.fromtimestamp(endTime) - datetime.datetime.fromtimestamp(startTime)
