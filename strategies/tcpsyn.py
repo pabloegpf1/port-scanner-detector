@@ -63,7 +63,5 @@ def extractSuspects(sources):
         currentSource = sources.get(source)
         #Source is suspect if it has more SYNs than ACKs (depends on ratio)
         if( (currentSource.synCount > MINSYN) & (currentSource.synCount > RSTRATIO*currentSource.rstCount)):
-            suspects.append(currentSource.ip)
-            print("SUSPECT: ", currentSource.ip, "Sent SYNs", currentSource.synCount, "Sent RSTs", currentSource.rstCount, "Sent ACKs", currentSource.rstCount)
-
+            suspects.append({'suspect': currentSource.ip, 'reason': "Sent "+str(currentSource.synCount)+" SYNs and "+str(currentSource.rstCount)+" RSTs"})
     return suspects

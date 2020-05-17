@@ -8,7 +8,7 @@ PACKETRATIO = 4
 class Source:
     def __init__(self, ip):
         self.ip = ip
-        self.connections = set()
+        self.udpCount = set()
 
 def udpScan(filename):
 
@@ -43,7 +43,7 @@ def udpScan(filename):
             sources[srcIP] = Source(srcIP)
 
         #Register connections to new dst
-        sources[srcIP].connections.add(dstIP)
+        sources[srcIP].udpCount.add(dstIP)
 
     delta = calculateDelta(startTime, endTime)
     return extractSuspects(sources, delta)
@@ -52,11 +52,9 @@ def extractSuspects(sources, delta):
     suspects = []
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
-        connectionsPerSecond = len(currentSource.connections)/delta
+        connectionsPerSecond = len(currentSource.udpCount)/delta
         if(connectionsPerSecond >= PACKETRATIO):
-            suspects.append(currentSource.ip)
-            #print("SUSPECT: ", currentSource.ip, "SYNs + ACKs per second: ", currentConnectionRatio)
-
+            suspects.append({'suspect': currentSource.ip, 'reason': str("Sent "+connectionsPerSecond+" UDP packets per second")})
     return suspects
 
 def calculateDelta(startTime, endTime):

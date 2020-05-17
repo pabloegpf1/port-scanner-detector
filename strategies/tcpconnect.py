@@ -65,9 +65,7 @@ def extractSuspects(sources, delta):
         currentSource = sources.get(source)
         #Source is suspect if it has more SYNs than ACKs (using ratio)
         if( (currentSource.synCount > MINSYN) & (currentSource.synCount > ACKRATIO*currentSource.ackCount)):
-            suspects.append(currentSource.ip)
-            #print("SUSPECT: ", currentSource.ip, "SYNs", currentSource.synCount, "ACKs", currentSource.ackCount)
-
+            suspects.append({'suspect': currentSource.ip, 'reason': "Sent "+str(currentSource.synCount)+" SYNs and "+str(currentSource.ackCount)+" ACKs"})
     return suspects
 
 def calculateDelta(startTime, endTime):

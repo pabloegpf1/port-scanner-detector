@@ -37,6 +37,5 @@ def extractSuspects(sources):
     suspects = []
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
-        suspects.append(currentSource.ip)
-
+        suspects.append({'suspect': currentSource.ip, 'reason': "Sent TCP packets with FIN, PSH, and URG flags"})
     return suspects
