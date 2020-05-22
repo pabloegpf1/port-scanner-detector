@@ -7,7 +7,8 @@ The following port scanning techniques are built in:
 - TcpFin
 - Tcp Xmas
 - Udp
-Generate pcap files with tcpdump and pass it as an argument to the detector and it will show the suspects for each scanning techniques.
+
+Generate a pcap file using tcpdump and pass it as an argument to the detector and it will show the suspects for each scanning technique.
 You can also test the detector with the simulated traffic files inside the /examples directory.
 ## Setup
 1. Download or clone project
