@@ -1,13 +1,12 @@
 import dpkt
 import socket
-import datetime
 
 #Flags
 RSTACK = 0x014
 SYN = 0x002
 
 #Connections per second to be considered a tcpConnect scan
-ACKRATIO = 100
+ACKRATIO = 10
 
 class Source:
     def __init__(self, ip):
@@ -48,11 +47,9 @@ def tcpConnectScan(filename):
         elif(tcp.flags == RSTACK):
             sources.get(srcIP).rstAckCount += 1
 
-    delta = calculateDelta(startTime, endTime)
+    return extractSuspects(sources)
 
-    return extractSuspects(sources, delta)
-
-def extractSuspects(sources, delta):
+def extractSuspects(sources):
     suspects = []
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
@@ -60,7 +57,3 @@ def extractSuspects(sources, delta):
         if( (currentSource.rstAckCount > 0) & (currentSource.synCount > ACKRATIO*currentSource.rstAckCount)):
             suspects.append({'suspect': currentSource.ip, 'reason': "Sent "+str(currentSource.synCount)+" SYNs and "+str(currentSource.rstAckCount)+" RST/ACKs"})
     return suspects
-
-def calculateDelta(startTime, endTime):
-    delta = datetime.datetime.fromtimestamp(endTime) - datetime.datetime.fromtimestamp(startTime)
-    return delta.total_seconds()
