@@ -19,7 +19,7 @@ def udpScan(filename):
 
     for timestamp, packet in pcap:
 
-        if(startTime == 0): 
+        if(startTime == 0):
             startTime = timestamp
         endTime = timestamp
 
@@ -52,9 +52,9 @@ def extractSuspects(sources, delta):
     suspects = []
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
-        connectionsPerSecond = len(currentSource.udpCount)/delta
+        connectionsPerSecond = round(len(currentSource.udpCount)/delta)
         if(connectionsPerSecond >= PACKETRATIO):
-            suspects.append({'suspect': currentSource.ip, 'reason': str("Sent "+connectionsPerSecond+" UDP packets per second")})
+            suspects.append({'suspect': currentSource.ip, 'reason': "Sent "+str(connectionsPerSecond)+" UDP packet per second (unique destination ports)"})
     return suspects
 
 def calculateDelta(startTime, endTime):

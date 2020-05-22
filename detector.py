@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
-from prettytable import PrettyTable
 import sys
 import dpkt
+from prettytable import PrettyTable
 
 #Import strategies
 from strategies.tcpsyn import tcpSynScan
@@ -28,6 +28,7 @@ def main(argv):
     printResults("udp",udpScan(filename))
 
 def printResults(strategyName, results):
+    
     print("\n-----||",strategyName,"||-----\n")
 
     if(len(results) == 0):

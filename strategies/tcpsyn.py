@@ -26,7 +26,7 @@ def tcpSynScan(filename):
 
     for timestamp, packet in pcap:
 
-        if(startTime == 0): 
+        if(startTime == 0):
             startTime = timestamp
         endTime = timestamp
 
@@ -44,7 +44,7 @@ def tcpSynScan(filename):
         #Register new sources
         if(sources.get(srcIP) == None):
             sources[srcIP] = Source(srcIP)
-        
+
         #Register new sources
         if(sources.get(dstIP) == None):
             sources[dstIP] = Source(dstIP)
@@ -64,7 +64,6 @@ def extractSuspects(sources):
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
         if(currentSource.synAckCount <= 0): continue
-        print(currentSource.ackCount/currentSource.synAckCount, currentSource.ackCount, currentSource.synAckCount)
         if(currentSource.ackCount/currentSource.synAckCount < VALID_HANDSHAKE_RATIO):
             suspects.append({'suspect': currentSource.ip, 'reason': "Did not complete "+str(currentSource.synAckCount-currentSource.ackCount)+" HandShakes"})
     return suspects

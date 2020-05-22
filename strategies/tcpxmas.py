@@ -26,7 +26,7 @@ def tcpXmasScan(filename):
             continue
 
         srcIP = socket.inet_ntoa(ip.src)
-        
+
         #Select TCP packets with ACK, FIN and PUSH
         if(tcp.flags == XMAS):
             sources[srcIP] = Source(srcIP)

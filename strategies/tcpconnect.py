@@ -15,10 +15,10 @@ class Source:
         self.ip = ip
         self.synCount = 0
         self.ackCount = 0
-    
+
     def addSyn(self):
         self.synCount += 1
-    
+
     def addAck(self):
         self.ackCount += 1
 
@@ -31,7 +31,7 @@ def tcpConnectScan(filename):
 
     for timestamp, packet in pcap:
 
-        if(startTime == 0): 
+        if(startTime == 0):
             startTime = timestamp
         endTime = timestamp
 
