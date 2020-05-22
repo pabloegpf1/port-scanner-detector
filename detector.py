@@ -20,6 +20,7 @@ def main(argv):
 
     filename = sys.argv[1]
 
+    #Run detection modules and print results
     printResults("tcpSyn",tcpSynScan(filename))
     printResults("tcpConnect",tcpConnectScan(filename))
     printResults("tcpNull",tcpNullScan(filename))
