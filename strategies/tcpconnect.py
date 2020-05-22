@@ -3,24 +3,17 @@ import socket
 import datetime
 
 #Flags
-ACK = 0x010
+RSTACK = 0x014
 SYN = 0x002
 
 #Connections per second to be considered a tcpConnect scan
 ACKRATIO = 100
-MINSYN = 100
 
 class Source:
     def __init__(self, ip):
         self.ip = ip
         self.synCount = 0
-        self.ackCount = 0
-
-    def addSyn(self):
-        self.synCount += 1
-
-    def addAck(self):
-        self.ackCount += 1
+        self.rstAckCount = 0
 
 def tcpConnectScan(filename):
 
@@ -51,9 +44,9 @@ def tcpConnectScan(filename):
 
         #Count SYNs and ACKs per source
         if(tcp.flags == SYN):
-            sources.get(srcIP).addSyn()
-        elif(tcp.flags == ACK):
-            sources.get(srcIP).addAck()
+            sources.get(srcIP).synCount += 1
+        elif(tcp.flags == RSTACK):
+            sources.get(srcIP).rstAckCount += 1
 
     delta = calculateDelta(startTime, endTime)
 
@@ -63,9 +56,9 @@ def extractSuspects(sources, delta):
     suspects = []
     for idx,source in enumerate(sources):
         currentSource = sources.get(source)
-        #Source is suspect if it has more SYNs than ACKs (using ratio)
-        if( (currentSource.synCount > MINSYN) & (currentSource.synCount > ACKRATIO*currentSource.ackCount)):
-            suspects.append({'suspect': currentSource.ip, 'reason': "Sent "+str(currentSource.synCount)+" SYNs and "+str(currentSource.ackCount)+" ACKs"})
+        #Source is suspect if it has more SYNs than RSTACKs (using ratio)
+        if( (currentSource.rstAckCount > 0) & (currentSource.synCount > ACKRATIO*currentSource.rstAckCount)):
+            suspects.append({'suspect': currentSource.ip, 'reason': "Sent "+str(currentSource.synCount)+" SYNs and "+str(currentSource.rstAckCount)+" RST/ACKs"})
     return suspects
 
 def calculateDelta(startTime, endTime):
