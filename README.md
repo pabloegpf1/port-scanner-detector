@@ -5,7 +5,7 @@ The following port scanning techniques are built in:
 - TcpConnect
 - TcpNull
 - TcpFin
-- Tcp Xmas
+- TcpXmas
 - Udp
 
 Generate a pcap file using tcpdump and pass it as an argument to the detector and it will show the suspects for each scanning technique.
